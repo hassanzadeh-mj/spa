@@ -1,73 +1,136 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-interface ServerMetrics {
-    cpu: number;
-    memory: number;
-    storage: number;
-}
-
-interface ServerDetail {
-    id: string;
-    name: string;
-    status: string;
-    ip: string;
-    metrics: ServerMetrics;
-}
-
-const serverDetails: Record<string, ServerDetail> = {
-    '1': {
+// شبیه‌سازی دیتابیس سرورها
+const servers = [
+    {
         id: '1',
-        name: 'Server Alpha',
+        name: 'Web Server 1',
         status: 'active',
-        ip: '192.168.1.10',
+        ip: '192.168.1.100',
         metrics: {
             cpu: 45,
-            memory: 68,
-            storage: 280,
-        },
+            memory: 78,
+            storage: 320
+        }
     },
-    '2': {
+    {
         id: '2',
-        name: 'Server Beta',
+        name: 'Database Server',
+        status: 'active',
+        ip: '192.168.1.101',
+        metrics: {
+            cpu: 23,
+            memory: 65,
+            storage: 450
+        }
+    },
+    {
+        id: '3',
+        name: 'Application Server',
         status: 'stopped',
-        ip: '192.168.1.11',
+        ip: '192.168.1.102',
         metrics: {
             cpu: 0,
             memory: 0,
-            storage: 150,
-        },
-    },
-    '3': {
-        id: '3',
-        name: 'Server Gamma',
-        status: 'restarting',
-        ip: '192.168.1.12',
-        metrics: {
-            cpu: 30,
-            memory: 40,
-            storage: 200,
-        },
-    },
-    '4': {
-        id: '4',
-        name: 'Server Delta',
-        status: 'active',
-        ip: '192.168.1.13',
-        metrics: {
-            cpu: 60,
-            memory: 70,
-            storage: 300,
-        },
-    },
-};
-
-export async function GET(req: Request, context: { params: { id: string } }) {
-    const { id } = context.params;
-    const server = serverDetails[id];
-
-    if (!server) {
-        return new NextResponse('Server not found', { status: 404 });
+            storage: 280
+        }
     }
+];
 
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const server = servers.find(s => s.id === params.id);
+    
+    if (!server) {
+        return NextResponse.json(
+            { error: 'Server not found' },
+            { status: 404 }
+        );
+    }
+    
     return NextResponse.json(server);
+}
+
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const body = await request.json();
+        const { action } = body;
+        
+        const serverIndex = servers.findIndex(s => s.id === params.id);
+        
+        if (serverIndex === -1) {
+            return NextResponse.json(
+                { error: 'Server not found' },
+                { status: 404 }
+            );
+        }
+        
+        const server = servers[serverIndex];
+        
+        // تغییر وضعیت سرور بر اساس عملیات
+        switch (action) {
+            case 'start':
+                if (server.status === 'active') {
+                    return NextResponse.json(
+                        { error: 'Server is already active' },
+                        { status: 400 }
+                    );
+                }
+                server.status = 'active';
+                server.metrics.cpu = Math.floor(Math.random() * 50) + 20;
+                server.metrics.memory = Math.floor(Math.random() * 40) + 50;
+                break;
+                
+            case 'stop':
+                if (server.status === 'stopped') {
+                    return NextResponse.json(
+                        { error: 'Server is already stopped' },
+                        { status: 400 }
+                    );
+                }
+                server.status = 'stopped';
+                server.metrics.cpu = 0;
+                server.metrics.memory = 0;
+                break;
+                
+            case 'restart':
+                if (server.status === 'stopped') {
+                    return NextResponse.json(
+                        { error: 'Cannot restart a stopped server' },
+                        { status: 400 }
+                    );
+                }
+                server.status = 'restarting';
+                // بعد از 2 ثانیه به active تغییر می‌کند
+                setTimeout(() => {
+                    server.status = 'active';
+                    server.metrics.cpu = Math.floor(Math.random() * 50) + 20;
+                    server.metrics.memory = Math.floor(Math.random() * 40) + 50;
+                }, 2000);
+                break;
+                
+            default:
+                return NextResponse.json(
+                    { error: 'Invalid action' },
+                    { status: 400 }
+                );
+        }
+        
+        return NextResponse.json({
+            success: true,
+            message: `Server ${action} successful`,
+            server: server
+        });
+        
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface ServerMetrics {
@@ -20,8 +20,10 @@ interface ServerDetail {
 
 export default function ServerDetailPage() {
     const params = useParams();
+    const router = useRouter();
     const [server, setServer] = useState<ServerDetail | null>(null);
     const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchServerDetails = async () => {
@@ -42,6 +44,70 @@ export default function ServerDetailPage() {
             fetchServerDetails();
         }
     }, [params.id]);
+
+    const handleServerAction = async (action: string) => {
+        if (!server) return;
+        
+        setActionLoading(action);
+        try {
+            // فراخوانی API برای تغییر وضعیت سرور
+            const response = await fetch(`/api/servers/${server.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action }),
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'خطا در انجام عملیات');
+            }
+            
+            // به‌روزرسانی وضعیت سرور
+            setServer(data.server);
+            
+            // نمایش پیام موفقیت
+            alert(`عملیات ${getActionText(action)} با موفقیت انجام شد`);
+            
+            // برای restart، بعد از 2 ثانیه وضعیت را به‌روزرسانی کن
+            if (action === 'restart') {
+                setTimeout(async () => {
+                    try {
+                        const refreshResponse = await fetch(`/api/servers/${server.id}`);
+                        if (refreshResponse.ok) {
+                            const refreshData = await refreshResponse.json();
+                            setServer(refreshData);
+                        }
+                    } catch (error) {
+                        console.error('Error refreshing server status:', error);
+                    }
+                }, 2000);
+            }
+            
+        } catch (error) {
+            console.error('Error performing server action:', error);
+            alert(error instanceof Error ? error.message : 'خطا در انجام عملیات');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const getActionText = (action: string) => {
+        switch (action) {
+            case 'start':
+                return 'راه‌اندازی';
+            case 'stop':
+                return 'توقف';
+            case 'restart':
+                return 'راه‌اندازی مجدد';
+            case 'logs':
+                return 'مشاهده لاگ‌ها';
+            default:
+                return action;
+        }
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -66,6 +132,21 @@ export default function ServerDetailPage() {
                 return 'در حال راه‌اندازی مجدد';
             default:
                 return status;
+        }
+    };
+
+    const isActionDisabled = (action: string) => {
+        if (!server) return true;
+        
+        switch (action) {
+            case 'start':
+                return server.status === 'active' || server.status === 'restarting';
+            case 'stop':
+                return server.status === 'stopped' || server.status === 'restarting';
+            case 'restart':
+                return server.status === 'stopped' || server.status === 'restarting';
+            default:
+                return false;
         }
     };
 
@@ -171,18 +252,49 @@ export default function ServerDetailPage() {
 
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
                 <h2 className="text-lg font-semibold mb-4 text-foreground font-sans">عملیات</h2>
-                <div className="flex gap-4">
-                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors font-medium">
-                        راه‌اندازی سرور
+                <div className="flex gap-4 flex-wrap">
+                    <button 
+                        onClick={() => handleServerAction('start')}
+                        disabled={isActionDisabled('start') || actionLoading === 'start'}
+                        className={`px-4 py-2 rounded transition-colors font-medium ${
+                            isActionDisabled('start') 
+                                ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        }`}
+                    >
+                        {actionLoading === 'start' ? 'در حال راه‌اندازی...' : 'راه‌اندازی سرور'}
                     </button>
-                    <button className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 transition-colors font-medium">
-                        توقف سرور
+                    
+                    <button 
+                        onClick={() => handleServerAction('stop')}
+                        disabled={isActionDisabled('stop') || actionLoading === 'stop'}
+                        className={`px-4 py-2 rounded transition-colors font-medium ${
+                            isActionDisabled('stop') 
+                                ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                                : 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                        }`}
+                    >
+                        {actionLoading === 'stop' ? 'در حال توقف...' : 'توقف سرور'}
                     </button>
-                    <button className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors font-medium">
-                        راه‌اندازی مجدد
+                    
+                    <button 
+                        onClick={() => handleServerAction('restart')}
+                        disabled={isActionDisabled('restart') || actionLoading === 'restart'}
+                        className={`px-4 py-2 rounded transition-colors font-medium ${
+                            isActionDisabled('restart') 
+                                ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                                : 'bg-yellow-600 text-white hover:bg-yellow-700'
+                        }`}
+                    >
+                        {actionLoading === 'restart' ? 'در حال راه‌اندازی مجدد...' : 'راه‌اندازی مجدد'}
                     </button>
-                    <button className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors font-medium">
-                        مشاهده لاگ‌ها
+                    
+                    <button 
+                        onClick={() => handleServerAction('logs')}
+                        disabled={actionLoading === 'logs'}
+                        className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors font-medium"
+                    >
+                        {actionLoading === 'logs' ? 'در حال بارگذاری...' : 'مشاهده لاگ‌ها'}
                     </button>
                 </div>
             </div>
