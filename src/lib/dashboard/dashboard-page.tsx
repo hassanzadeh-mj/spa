@@ -15,7 +15,6 @@ import {
     YAxis, 
     CartesianGrid, 
     Tooltip, 
-    Legend, 
     ResponsiveContainer 
 } from 'recharts';
 import D3Gauge from '@/components/d3-gauge';
@@ -75,10 +74,10 @@ export default function DashboardPage() {
             setServers(data);
             
             // آماده‌سازی داده‌های وضعیت سرورها
-            const statusCounts = data.reduce((acc: any, server: Server) => {
+            const statusCounts = data.reduce((acc: Record<string, number>, server: Server) => {
                 acc[server.status] = (acc[server.status] || 0) + 1;
                 return acc;
-            }, {});
+            }, {} as Record<string, number>);
             
             const statusData = Object.entries(statusCounts).map(([status, count]) => ({
                 name: getStatusText(status),
@@ -281,7 +280,7 @@ export default function DashboardPage() {
                                 cx="50%"
                                 cy="50%"
                                 labelLine={false}
-                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                                 outerRadius={80}
                                 fill="#8884d8"
                                 dataKey="value"

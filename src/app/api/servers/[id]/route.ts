@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-static';
+
 // شبیه‌سازی دیتابیس سرورها
 const servers = [
     {
@@ -37,11 +39,18 @@ const servers = [
     }
 ];
 
+export async function generateStaticParams() {
+    return servers.map((server) => ({
+        id: server.id,
+    }));
+}
+
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const server = servers.find(s => s.id === params.id);
+    const { id } = await params;
+    const server = servers.find(s => s.id === id);
     
     if (!server) {
         return NextResponse.json(
@@ -55,13 +64,14 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const body = await request.json();
         const { action } = body;
         
-        const serverIndex = servers.findIndex(s => s.id === params.id);
+        const serverIndex = servers.findIndex(s => s.id === id);
         
         if (serverIndex === -1) {
             return NextResponse.json(
@@ -127,7 +137,7 @@ export async function PUT(
             server: server
         });
         
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

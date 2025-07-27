@@ -48,21 +48,32 @@ export default function D3Gauge({ value, maxValue, title, color, size = 200 }: G
             .startAngle(-Math.PI / 2)
             .endAngle(Math.PI / 2);
 
-        // رسم background
-        g.append('path')
-            .datum({ endAngle: Math.PI / 2 })
-            .style('fill', '#374151')
-            .attr('d', backgroundArc as any);
-
         // محاسبه زاویه بر اساس مقدار
         const percentage = value / maxValue;
         const angle = percentage * Math.PI - Math.PI / 2;
 
+        const arcParams = {
+            innerRadius: radius * 0.6,
+            outerRadius: radius,
+            startAngle: -Math.PI / 2,
+            endAngle: angle
+        };
+        const backgroundArcParams = {
+            innerRadius: radius * 0.6,
+            outerRadius: radius,
+            startAngle: -Math.PI / 2,
+            endAngle: Math.PI / 2
+        };
+
+        // رسم background
+        g.append('path')
+            .style('fill', '#374151')
+            .attr('d', backgroundArc(backgroundArcParams));
+
         // رسم gauge
         g.append('path')
-            .datum({ endAngle: angle })
             .style('fill', color)
-            .attr('d', arc as any)
+            .attr('d', arc(arcParams))
             .transition()
             .duration(1000)
             .ease(d3.easeElastic);

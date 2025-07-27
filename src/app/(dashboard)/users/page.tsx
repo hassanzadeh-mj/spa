@@ -30,19 +30,6 @@ export default function UsersPage() {
         );
     };
 
-    const getRoleText = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return 'مدیر';
-            case 'manager':
-                return 'سرپرست';
-            case 'user':
-                return 'کاربر';
-            default:
-                return role;
-        }
-    };
-
     const filteredUsers =
         filter === 'all' ? users : users.filter((u) => u.role === filter);
 
