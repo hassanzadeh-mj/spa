@@ -1,6 +1,7 @@
 'use client';
 
-import {useLoginLogic} from './useLoginLogic';
+import { useLoginLogic } from "./hook/use-login-logic";
+
 
 export function LoginPage() {
     const {
