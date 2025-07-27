@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
-import ThemeToggle from '@/components/theme-toggle';
+import ThemeToggle from '@/shared/components/theme-toggle';
 
 export function Navbar() {
     const pathname = usePathname();
@@ -16,16 +16,16 @@ export function Navbar() {
         { href: '/resources', label: 'منابع' },
         { href: '/users', label: 'کاربران' },
     ];
-
+    console.log(pathname)
     return (
-        <nav className="flex justify-between items-center gap-4 p-4 bg-card shadow-sm border-b border-border transition-colors rtl">
+        <nav className="flex item justify-between items-center gap-4 p-4 bg-card shadow-sm border-b border-border transition-colors rtl">
             <div className="flex gap-4">
                 {links.map(({ href, label }) => (
                     <Link
                         key={href}
                         href={href}
                         className={`font-medium transition-colors ${
-                            pathname === href ? 'text-primary font-semibold' : 'text-muted-foreground hover:text-primary'
+                            pathname === `${href}/` || pathname === href ? 'text-primary font-semibold' : 'text-muted-foreground hover:text-primary'
                         }`}
                     >
                         {label}

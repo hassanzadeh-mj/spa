@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ServerDetailClient from './server-detail-client';
+import {ServerDetailsPage} from "@/lib/servers/details";
 
 export async function generateStaticParams() {
     return [
@@ -9,11 +9,11 @@ export async function generateStaticParams() {
     ];
 }
 
-export default async function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ServerDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     return (
         <Suspense fallback={<div>در حال بارگذاری...</div>}>
-            <ServerDetailClient id={id} />
+            <ServerDetailsPage id={id} />
         </Suspense>
     );
 } 

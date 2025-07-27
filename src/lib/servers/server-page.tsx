@@ -1,122 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { v4 as uuidv4 } from 'uuid';
-import { Virtuoso } from 'react-virtuoso';
-
-interface Server {
-    id: string;
-    name: string;
-    status: string;
-    ip: string;
-}
+import {useServersLogic} from "@/lib/servers";
 
 export function ServersPage() {
-    const [servers, setServers] = useState<Server[]>([]);
-    const [filter, setFilter] = useState<string>('all');
-    const [newServerName, setNewServerName] = useState('');
-    const [newServerIP, setNewServerIP] = useState('');
-
-    useEffect(() => {
-        const fetchServers = async () => {
-            const res = await fetch('/api/servers');
-            const data = await res.json();
-            setServers(data);
-        };
-        fetchServers();
-    }, []);
-
-    const filteredServers =
-        filter === 'all' ? servers : servers.filter((s) => s.status === filter);
-
-    const handleAction = (id: string, action: string) => {
-        setServers((prev) =>
-            prev.map((s) =>
-                s.id === id ? { ...s, status: action === 'restart' ? 'restarting' : action } : s
-            )
-        );
-    };
-
-    const handleAddServer = () => {
-        if (!newServerName || !newServerIP) return;
-        const newServer: Server = {
-            id: uuidv4(),
-            name: newServerName,
-            ip: newServerIP,
-            status: 'stopped',
-        };
-        setServers((prev) => [...prev, newServer]);
-        setNewServerName('');
-        setNewServerIP('');
-    };
+    const {
+        servers,
+        getStatusColor,
+        getStatusText
+    } = useServersLogic();
 
     return (
-        <div className="p-6 space-y-6 h-fitt">
-            <h1 className="text-2xl font-bold">Servers</h1>
-
-            {/* Filter */}
-            <div className="flex space-x-4 mb-4">
-                {['all', 'active', 'stopped', 'restarting'].map((status) => (
-                    <button
-                        key={status}
-                        className={`px-3 py-1 rounded ${
-                            filter === status ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                        }`}
-                        onClick={() => setFilter(status)}
-                    >
-                        {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-                    </button>
-                ))}
-            </div>
-
-            {/* Add Server */}
-            <div className="space-y-2">
-                <h2 className="text-lg font-medium">Add New Server</h2>
-                <input
-                    value={newServerName}
-                    onChange={(e) => setNewServerName(e.target.value)}
-                    placeholder="Server Name"
-                    className="border rounded px-3 py-1 mr-2"
-                />
-                <input
-                    value={newServerIP}
-                    onChange={(e) => setNewServerIP(e.target.value)}
-                    placeholder="IP Address"
-                    className="border rounded px-3 py-1 mr-2"
-                />
-                <button onClick={handleAddServer} className="bg-green-600 text-white px-4 py-1 rounded">
-                    Add
-                </button>
-            </div>
-
-            {/* Virtualized Server List */}
-            <div style={{ height: '600px' }}>
-                <Virtuoso
-                    data={filteredServers}
-                    itemContent={(index : number, server) => (
-                        <li key={server.id} className="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2 m-2">
-                            <Link href={`/servers/${server.id}`}>
-                                <div>
-                                    <h2 className="font-bold text-lg">{server.name}</h2>
-                                    <p className="text-sm text-gray-600">IP: {server.ip}</p>
-                                    <p className="capitalize">Status: {server.status}</p>
-                                </div>
+        <div className="p-6 space-y-4 rtl">
+            <h1 className="text-2xl font-bold text-foreground font-sans">سرورها</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {servers.map((server) => (
+                    <div key={server.id} className="bg-card border border-border p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-lg font-semibold text-foreground font-sans">{server.name}</h3>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(server.status)}`}>
+                                {getStatusText(server.status)}
+                            </span>
+                        </div>
+                        <p className="text-muted-foreground mb-4 font-sans">آدرس IP: {server.ip}</p>
+                        <div className="flex gap-2">
+                            <Link
+                                href={`/servers/${server.id}`}
+                                className="px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors font-medium"
+                            >
+                                مدیریت
                             </Link>
-                            <div className="space-x-2">
-                                <button onClick={() => handleAction(server.id, 'active')} className="bg-blue-500 text-white px-2 py-1 rounded">
-                                    Start
-                                </button>
-                                <button onClick={() => handleAction(server.id, 'stopped')} className="bg-yellow-500 text-white px-2 py-1 rounded">
-                                    Stop
-                                </button>
-                                <button onClick={() => handleAction(server.id, 'restarting')} className="bg-purple-600 text-white px-2 py-1 rounded">
-                                    Restart
-                                </button>
-                            </div>
-                        </li>
-                    )}
-                />
+                            <Link
+                                href={`/servers/${server.id}`}
+                                className="px-3 py-1 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors font-medium"
+                            >
+                                جزئیات
+                            </Link>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

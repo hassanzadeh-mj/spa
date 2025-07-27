@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navbar } from "@/shared";
-import AuthGuard from "@/components/auth-guard";
+import AuthGuard from "@/shared/components/auth-guard";
 
 interface DashboardLayoutProps {
   children: ReactNode;
