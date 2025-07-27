@@ -6,7 +6,7 @@ interface LoginLayoutProps {
 
 export default function LoginLayout({ children }: LoginLayoutProps) {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center transition-colors">
+    <div className="min-h-screen bg-background flex items-center justify-center transition-colors rtl">
       {children}
     </div>
   );

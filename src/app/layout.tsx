@@ -8,13 +8,13 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children, dashboard }: RootLayoutProps) {
-    return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-background text-foreground transition-colors">
+  return (
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
+      <body className="bg-background text-foreground transition-colors font-sans">
         <ThemeProvider>
           {dashboard || children}
         </ThemeProvider>
-        </body>
-        </html>
-    );
+      </body>
+    </html>
+  );
 }

@@ -41,7 +41,7 @@ export default function Login() {
     };
 
     return (
-        <div className="max-w-md w-full p-6 bg-card rounded-lg shadow-lg border border-border transition-colors">
+        <div className="max-w-md w-full p-6 bg-card rounded-lg shadow-lg border border-border transition-colors rtl">
             <h1 className="text-2xl font-bold mb-6 text-center text-foreground transition-colors font-sans">ورود به سیستم</h1>
             
             <form onSubmit={handleLogin} className="space-y-4">

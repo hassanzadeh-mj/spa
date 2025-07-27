@@ -11,14 +11,14 @@ export function Navbar() {
     const router = useRouter();
 
     const links = [
-        { href: '/', label: 'Dashboard' },
-        { href: '/servers', label: 'Servers' },
-        { href: '/resources', label: 'Resources' },
-        { href: '/users', label: 'Users' },
+        { href: '/', label: 'داشبورد' },
+        { href: '/servers', label: 'سرورها' },
+        { href: '/resources', label: 'منابع' },
+        { href: '/users', label: 'کاربران' },
     ];
 
     return (
-        <nav className="flex justify-between items-center gap-4 p-4 bg-card shadow-sm border-b border-border transition-colors">
+        <nav className="flex justify-between items-center gap-4 p-4 bg-card shadow-sm border-b border-border transition-colors rtl">
             <div className="flex gap-4">
                 {links.map(({ href, label }) => (
                     <Link
@@ -42,11 +42,11 @@ export function Navbar() {
                         }}
                         className="text-destructive hover:text-destructive/80 transition-colors font-medium"
                     >
-                        Logout ({user})
+                        خروج ({user})
                     </button>
                 ) : (
                     <Link href="/login" className="text-primary hover:underline font-medium">
-                        Login
+                        ورود
                     </Link>
                 )}
             </div>

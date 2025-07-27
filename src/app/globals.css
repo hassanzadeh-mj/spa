@@ -65,8 +65,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+  --font-mono: 'Vazir Code', 'Consolas', monospace;
 }
 
 * {
@@ -82,9 +82,11 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
   line-height: 1.6;
   font-weight: 400;
+  direction: rtl;
+  text-align: right;
 }
 
 /* بهبود contrast برای دارک مود */
@@ -117,4 +119,22 @@ body {
 
 .dark .bg-secondary {
   background-color: #262626 !important;
+}
+
+/* تنظیمات RTL */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* بهبود نمایش اعداد در RTL */
+.number {
+  direction: ltr;
+  text-align: left;
+  display: inline-block;
 }

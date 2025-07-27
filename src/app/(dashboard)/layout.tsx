@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children, header }: DashboardLayoutProps) {
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background transition-colors">
+      <div className="min-h-screen bg-background transition-colors rtl">
         <Navbar />
         {header}
         <main className="p-6">

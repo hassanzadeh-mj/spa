@@ -10,25 +10,35 @@ export default function Header() {
   const getPageTitle = () => {
     // Check for dynamic server pages
     if (pathname.startsWith('/servers/') && pathname !== '/servers') {
-      return 'Server Details';
+      return 'جزئیات سرور';
     }
     
     switch (pathname) {
       case '/':
-        return 'Dashboard';
+        return 'داشبورد';
       case '/servers':
-        return 'Servers';
+        return 'سرورها';
       case '/resources':
-        return 'Resources';
+        return 'منابع';
       case '/users':
-        return 'Users';
+        return 'کاربران';
       default:
-        return 'Dashboard';
+        return 'داشبورد';
     }
   };
 
+  const getCurrentDate = () => {
+    const date = new Date();
+    return date.toLocaleDateString('fa-IR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
-    <header className="bg-card shadow-sm border-b border-border transition-colors">
+    <header className="bg-card shadow-sm border-b border-border transition-colors rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -36,25 +46,20 @@ export default function Header() {
               {getPageTitle()}
             </h1>
             {user && (
-              <span className="ml-4 text-sm text-muted-foreground transition-colors font-medium">
-                Welcome, {user}
+              <span className="mr-4 text-sm text-muted-foreground transition-colors font-medium">
+                خوش آمدید، {user}
               </span>
             )}
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-muted-foreground transition-colors font-medium">System Online</span>
+              <span className="text-sm text-muted-foreground transition-colors font-medium">سیستم آنلاین</span>
             </div>
             
             <div className="text-sm text-muted-foreground transition-colors font-medium">
-              {new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {getCurrentDate()}
             </div>
           </div>
         </div>

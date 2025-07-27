@@ -30,23 +30,41 @@ export default function UsersPage() {
         );
     };
 
+    const getRoleText = (role: string) => {
+        switch (role) {
+            case 'admin':
+                return 'مدیر';
+            case 'manager':
+                return 'سرپرست';
+            case 'user':
+                return 'کاربر';
+            default:
+                return role;
+        }
+    };
+
     const filteredUsers =
         filter === 'all' ? users : users.filter((u) => u.role === filter);
 
     return (
-        <div className="p-6 space-y-4">
-            <h1 className="text-2xl font-bold text-foreground font-sans">Users</h1>
+        <div className="p-6 space-y-4 rtl">
+            <h1 className="text-2xl font-bold text-foreground font-sans">کاربران</h1>
 
-            <div className="flex space-x-4 mb-4">
-                {['all', 'admin', 'manager', 'user'].map((role) => (
+            <div className="flex gap-4 mb-4">
+                {[
+                    { value: 'all', label: 'همه' },
+                    { value: 'admin', label: 'مدیر' },
+                    { value: 'manager', label: 'سرپرست' },
+                    { value: 'user', label: 'کاربر' }
+                ].map((role) => (
                     <button
-                        key={role}
+                        key={role.value}
                         className={`px-3 py-1 rounded transition-colors font-medium ${
-                            filter === role ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                            filter === role.value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                         }`}
-                        onClick={() => setFilter(role)}
+                        onClick={() => setFilter(role.value)}
                     >
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                        {role.label}
                     </button>
                 ))}
             </div>
@@ -55,9 +73,9 @@ export default function UsersPage() {
                 <table className="min-w-full">
                     <thead className="bg-muted/50">
                         <tr>
-                            <th className="px-4 py-3 text-left text-foreground font-semibold font-sans">Name</th>
-                            <th className="px-4 py-3 text-left text-foreground font-semibold font-sans">Email</th>
-                            <th className="px-4 py-3 text-left text-foreground font-semibold font-sans">Role</th>
+                            <th className="px-4 py-3 text-right text-foreground font-semibold font-sans">نام</th>
+                            <th className="px-4 py-3 text-right text-foreground font-semibold font-sans">ایمیل</th>
+                            <th className="px-4 py-3 text-right text-foreground font-semibold font-sans">نقش</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,11 +87,15 @@ export default function UsersPage() {
                                     <select
                                         value={user.role}
                                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                        className="bg-background border border-input rounded px-2 py-1 text-primary capitalize transition-colors font-medium focus:ring-2 focus:ring-ring focus:border-transparent"
+                                        className="bg-background border border-input rounded px-2 py-1 text-primary transition-colors font-medium focus:ring-2 focus:ring-ring focus:border-transparent"
                                     >
-                                        {['admin', 'manager', 'user'].map((roleOption) => (
-                                            <option key={roleOption} value={roleOption}>
-                                                {roleOption.charAt(0).toUpperCase() + roleOption.slice(1)}
+                                        {[
+                                            { value: 'admin', label: 'مدیر' },
+                                            { value: 'manager', label: 'سرپرست' },
+                                            { value: 'user', label: 'کاربر' }
+                                        ].map((roleOption) => (
+                                            <option key={roleOption.value} value={roleOption.value}>
+                                                {roleOption.label}
                                             </option>
                                         ))}
                                     </select>
