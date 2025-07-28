@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import {
     Area,
     AreaChart,
@@ -16,8 +17,11 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import D3Gauge from '@/shared/components/d3-gauge';
 import {useDashboardLogic} from "@/lib/dashboard/hook";
+
+const D3Gauge = dynamic(() => import('@/shared/components/d3-gauge'), {
+  loading: () => <div>Loading gauge...</div>
+});
 
 export function DashboardPage() {
     const {
@@ -64,7 +68,6 @@ export function DashboardPage() {
                 </div>
             </div>
 
-            {/* نمودار خطی CPU و Memory */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
                     <h2 className="text-lg font-semibold mb-4 text-foreground font-sans">تاریخچه استفاده پردازنده</h2>

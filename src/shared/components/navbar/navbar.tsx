@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
-import ThemeToggle from '@/shared/components/theme-toggle';
+import dynamic from 'next/dynamic';
+
+const ThemeToggle = dynamic(() => import('@/shared/components/theme-toggle'), {
+  loading: () => <div>Loading theme toggle...</div>
+});
 
 export function Navbar() {
     const pathname = usePathname();

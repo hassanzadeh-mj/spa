@@ -1,6 +1,10 @@
 import { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import './globals.css';
-import ThemeProvider from '@/shared/components/theme-provider';
+
+const ThemeProvider = dynamic(() => import('@/shared/components/theme-provider'), {
+  loading: () => <div>Loading...</div>
+});
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

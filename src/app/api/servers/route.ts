@@ -3,20 +3,20 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-static';
 
 // شبیه‌سازی دیتابیس سرورها
-const servers = [
-    {
-        id: '1',
+    const servers = [
+        {
+            id: '1',
         name: 'Web Server 1',
-        status: 'active',
+            status: 'active',
         ip: '192.168.1.100',
         metrics: {
             cpu: 45,
             memory: 78,
             storage: 320
         }
-    },
-    {
-        id: '2',
+        },
+        {
+            id: '2',
         name: 'Database Server',
         status: 'active',
         ip: '192.168.1.101',
@@ -25,9 +25,9 @@ const servers = [
             memory: 65,
             storage: 450
         }
-    },
-    {
-        id: '3',
+        },
+        {
+            id: '3',
         name: 'Application Server',
         status: 'stopped',
         ip: '192.168.1.102',

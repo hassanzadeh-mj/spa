@@ -27,7 +27,6 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }, [isDark, mounted]);
 
-  // جلوگیری از hydration mismatch
   if (!mounted) {
     return <>{children}</>;
   }

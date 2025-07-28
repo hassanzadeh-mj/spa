@@ -51,14 +51,14 @@ export async function GET(
 ) {
     const { id } = await params;
     const server = servers.find(s => s.id === id);
-    
+
     if (!server) {
         return NextResponse.json(
             { error: 'Server not found' },
             { status: 404 }
         );
     }
-    
+
     return NextResponse.json(server);
 }
 
